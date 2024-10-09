@@ -183,6 +183,14 @@ uint64_t des(uint64_t input, uint64_t key, char mode) {
     uint64_t init_perm_res      = 0;
     uint64_t inv_init_perm_res  = 0;
     uint64_t pre_output         = 0;
+
+    /*
+    * Move a lista de bits da variavel init_perm_res uma casa para a esquerda,
+    * abrindo espaço na ultima casa para um novo bit.
+    * A lista de bits do input é movida para a direita o numero de vezes da posição do elemento da lista IP,
+    * no final é utilizado a mascara LB64_MASK para obter o ultimo elemento da lista.
+    * o |= atualiza a lista de bits da variavel init_perm_res.
+    */
     
     /* initial permutation */
     for (i = 0; i < 64; i++) {
