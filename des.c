@@ -1,21 +1,35 @@
-/*
- * Data Encryption Standard
- * An approach to DES algorithm
- * 
- * By: Daniel Huertas Gonzalez
- * Email: huertas.dani@gmail.com
- * Version: 0.1
- * 
- * Based on the document FIPS PUB 46-3
- */
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 
+/* -------- Tabelas segundo a documentação FIPS PUB 46-3 -------- */
+
+/* 
+    Máscaras para obter o último bit.
+*/
+
 #define LB32_MASK   0x00000001
 #define LB64_MASK   0x0000000000000001
+
+/*
+    Máscaras para obter 8 bits.
+    A primeira máscara obtem os 8 últimos bits.
+    A segunda máscara obtem os 8 primeiros bits.
+*/
+
 #define L64_MASK    0x00000000ffffffff
 #define H64_MASK    0xffffffff00000000
+
+/*
+    O algoritmo DES tem como base os mecanismos 'confusion' e 'diffusion'.
+    Esses dois conceitos foram introduzidos por Claude Shannon, para aumentar a segurança e complexidade
+    do processo de encriptação.
+*/
+
+/*
+    O conceito de 'diffusion', é realizado no algoritmo através de permutações e transposições.
+    Esse fundamento permite espalhar um digito do 'plaintext' sobre muitos digitos do 'ciphertext'.
+*/
 
 /* Initial Permutation Table */
 static char IP[] = {
@@ -40,6 +54,10 @@ static char PI[] = {
     34,  2, 42, 10, 50, 18, 58, 26, 
     33,  1, 41,  9, 49, 17, 57, 25
 };
+
+/*
+    ---- Tabelas que pertencem a função F da Rede de Feistel -----
+*/
 
 /*Expansion table */
 static char E[] = {
@@ -115,6 +133,11 @@ static char S[8][64] = {{
      7, 11,  4,  1,  9, 12, 14,  2,  0,  6, 10, 13, 15,  3,  5,  8,
      2,  1, 14,  7,  4, 10,  8, 13, 15, 12,  9,  0,  3,  5,  6, 11
 }};
+
+
+/*
+   ---- Tabelas utilizadas na geração das sub-chaves ----
+*/
 
 /* Permuted Choice 1 Table */
 static char PC1[] = {
