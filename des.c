@@ -27,7 +27,7 @@
 */
 
 /*
-    O conceito de 'diffusion', é realizado no algoritmo através de permutações e transposições.
+    O conceito 'diffusion', é realizado no algoritmo através de permutações e transposições.
     Esse fundamento permite espalhar um digito do 'plaintext' sobre muitos digitos do 'ciphertext'.
 */
 
@@ -57,6 +57,12 @@ static char PI[] = {
 
 /*
     ---- Tabelas que pertencem a função F da Rede de Feistel -----
+*/
+
+/*
+    O conceito 'confusion', é realizado no algoritmo através de substituições.
+    No DES, esse mecanismo é implementado exatamente na Função F,
+    e principalmente através das tabelas de substituição (S-boxes).
 */
 
 /*Expansion table */
