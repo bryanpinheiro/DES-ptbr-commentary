@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-/* -------- Tabelas segundo a documentação FIPS PUB 46-3 -------- */
+/* -------- Tabelas definidas pela documentação FIPS PUB 46-3 -------- */
 
 /* 
     Máscaras para obter o último bit.
@@ -43,7 +43,7 @@ static char IP[] = {
     63, 55, 47, 39, 31, 23, 15,  7
 };
 
-/* Inverse Initial Permutation Table */
+/* Inverse Initial Permutation or Final Permutation Table */
 static char PI[] = {
     40,  8, 48, 16, 56, 24, 64, 32, 
     39,  7, 47, 15, 55, 23, 63, 31, 
@@ -60,9 +60,16 @@ static char PI[] = {
 */
 
 /*
-    O conceito 'confusion', é realizado no algoritmo através de substituições.
+    O conceito 'confusion', é realizado no algoritmo através de substituições, permitindo obscurer a relação da chave com o 'ciphertext'.
     No DES, esse mecanismo é implementado exatamente na Função F,
     e principalmente através das tabelas de substituição (S-boxes).
+*/
+
+
+/*
+    A etapa da Expansão de permutação na Função F, contribui para o mecanismo de 'diffusion',
+    porque os 32-bits da metade da direita são expandidos, e utilizados multiplas vezes, chegando no final em 48 bits. 
+    Esse processo segue a tabela de Expansão definida abaixo:
 */
 
 /*Expansion table */
@@ -77,17 +84,17 @@ static char E[] = {
     28, 29, 30, 31, 32,  1
 };
 
-/* Post S-Box permutation */
-static char P[] = {
-    16,  7, 20, 21, 
-    29, 12, 28, 17, 
-     1, 15, 23, 26, 
-     5, 18, 31, 10, 
-     2,  8, 24, 14, 
-    32, 27,  3,  9, 
-    19, 13, 30,  6, 
-    22, 11,  4, 25
-};
+/*
+    Após a etapa da Expansão que retorna 48-bits, o resultado é misturado com a sub-chave de 48-bits,
+    através de uma operação XOR. Essa etapa envolve o mecanismo 'confusion', porque mistura os dados com a sub-chave.
+
+    Na etapa das tabelas de S-Boxes, é aperfeiçoado o mecanismo de 'confusion', ou seja, ocorre uma melhora na substituição dos bits. 
+    Diante do resultado anterior de 48-bits, ocorre uma divisão desses 48-bits em 8 blocos de 6-bits cada. 
+    
+    E cada bloco de 6-bits é então utilizado para uma substituição simples,
+    onde o primeiro e ultimo numero é a linha e os 4 numeros do meio representam a coluna. Desse maneira, esses 6-bits são cordenadas,
+    para o mapa de cada S-Box, que resulta em um bloco de 4-bits. Observação: 4-bits, ou seja, os números variam de 0 a 15.
+*/
 
 /* The S-Box tables */
 static char S[8][64] = {{
@@ -139,6 +146,24 @@ static char S[8][64] = {{
      7, 11,  4,  1,  9, 12, 14,  2,  0,  6, 10, 13, 15,  3,  5,  8,
      2,  1, 14,  7,  4, 10,  8, 13, 15, 12,  9,  0,  3,  5,  6, 11
 }};
+
+
+/*
+    O resultado final de 32-bits da junção das S-boxes, é reorganizado novamente
+    seguindo a tabela abaixo:
+*/
+
+/* Post S-Box permutation */
+static char P[] = {
+    16,  7, 20, 21, 
+    29, 12, 28, 17, 
+     1, 15, 23, 26, 
+     5, 18, 31, 10, 
+     2,  8, 24, 14, 
+    32, 27,  3,  9, 
+    19, 13, 30,  6, 
+    22, 11,  4, 25
+};
 
 
 /*
