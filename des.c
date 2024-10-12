@@ -96,7 +96,7 @@ static char E[] = {
     para o mapa de cada S-Box, que resulta em um bloco de 4-bits. Observação: 4-bits, ou seja, os números variam de 0 a 15.
 */
 
-/* The S-Box tables */
+/* Tabelas 'S-boxes', Caixas de Substituição */
 static char S[8][64] = {{
     /* S1 */
     14,  4, 13,  1,  2, 15, 11,  8,  3, 10,  6, 12,  5,  9,  0,  7,  
@@ -168,22 +168,55 @@ static char P[] = {
 
 /*
    ---- Tabelas utilizadas na geração das sub-chaves ----
+   Observação: A chave inicialmente definida possui 64 bits
 */
 
-/* Permuted Choice 1 Table */
+/*
+    O mecanismo de 'difusion', também ocorre na geração das sub-chaves.
+    Nessa etapa a chave original de 64-bits é reorganizada de maneira com que os
+    8 bits sejam eliminados, chegando ao resultado final de 56-bits seguindo a tabela PC1.
+*/
+
+/*
+    Esse resultado de 56-bits será dividido em duas partes de 26-bits cada, chamadas de C e D.
+    C corresponde a parte da esquerda e D a parte da direita.
+*/
+
+/* Tabela de Escolha Permutada 1 (PC1) */
 static char PC1[] = {
-    57, 49, 41, 33, 25, 17,  9,
+    57, 49, 41, 33, 25, 17,  9, // C
      1, 58, 50, 42, 34, 26, 18,
     10,  2, 59, 51, 43, 35, 27,
     19, 11,  3, 60, 52, 44, 36,
-    
-    63, 55, 47, 39, 31, 23, 15,
+
+    63, 55, 47, 39, 31, 23, 15, // D
      7, 62, 54, 46, 38, 30, 22,
     14,  6, 61, 53, 45, 37, 29,
     21, 13,  5, 28, 20, 12,  4
 };
 
-/* Permuted Choice 2 Table */
+/*
+    Após a escolha permutada 1, ocorrem 16 rodadas para a geração de 16 sub-chaves.
+    Para uma rodada (i), os bits das metades C[i] e D[i] são deslocadas para a esquerda 
+    de maneira alternada entre 1 e 2 posições, conforme a rodada.
+
+    Esse processo de deslocamento assegura que cada sub-chave é gerada por uma permutação diferente,
+    apartir da chave original.
+*/
+
+/* Vetor de Deslocamento por Rodada */
+static char iteration_shift[] = {
+ /* 1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16 <---- Rodadas */ 
+    1,  1,  2,  2,  2,  2,  2,  2,  1,  2,  2,  2,  2,  2,  2,  1 // <----- Número de deslocamentos para a esquerda
+};
+
+
+/*
+    Em cada rodada, após o deslocamento para a esquerda, cada parte C e D são unidas novamente, formando um bloco de 56-bits.
+    Essa sub-chave de 56-bits é permutada novamente, selecionando somente 48-bits seguindo a tabela PC2 abaixo:
+*/
+
+/* Tabela de Escolha Permutada 2 (PC2)  */
 static char PC2[] = {
     14, 17, 11, 24,  1,  5,
      3, 28, 15,  6, 21, 10,
@@ -193,12 +226,6 @@ static char PC2[] = {
     30, 40, 51, 45, 33, 48,
     44, 49, 39, 56, 34, 53,
     46, 42, 50, 36, 29, 32
-};
-
-/* Iteration Shift Array */
-static char iteration_shift[] = {
- /* 1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16 */
-    1,  1,  2,  2,  2,  2,  2,  2,  1,  2,  2,  2,  2,  2,  2,  1
 };
 
 /*
